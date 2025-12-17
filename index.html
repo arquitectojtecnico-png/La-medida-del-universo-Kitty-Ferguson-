@@ -1,0 +1,551 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\froman\fcharset0 Times-Bold;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww29200\viewh18380\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\b\fs24 \cf0 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 <!DOCTYPE html>\
+<html lang="es">\
+<head>\
+    <meta charset="UTF-8">\
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">\
+    <title>La Medida del Universo - Exploraci\'f3n Interactiva</title>\
+    \
+    <!-- Tailwind CSS -->\
+    <script src="https://cdn.tailwindcss.com"></script>\
+    \
+    <!-- Chart.js -->\
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>\
+\
+    <!-- Google Fonts -->\
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">\
+\
+    <!-- Placeholder Comments Required -->\
+    <!-- Chosen Palette: "Cosmic Sand" - Warm Neutrals (Stone/Sand background), Dark Charcoal text for readability, Deep Terracotta and Muted Blue for data visualization accents to create a sense of history mixed with science. -->\
+    \
+    <!-- Application Structure Plan: \
+         Structure: "The Cosmic Ladder Dashboard"\
+         The app is divided into a vertical scrolling narrative with interactive "Stops" or "Rungs" on the ladder of knowledge.\
+         1. Hero: Title and Introduction.\
+         2. Navigation: Sticky bar to jump between eras.\
+         3. Era 1 (Antiquity): Focus on Geometry & Logic. Interaction: Eratosthenes visualization (CSS-based).\
+         4. Era 2 (Solar System): Focus on Telescopes & Math. Interaction: Interactive card regarding the AU and Parallax.\
+         5. Era 3 (The Cosmos): Focus on Expansion. Interaction: Interactive Hubble Plot (Chart.js) and Universe Composition (Chart.js).\
+         6. Learnings: A grid of key takeaways focusing on the human element.\
+         \
+         Why this structure? The book emphasizes the "Escalera de Distancias C\'f3smicas" (Cosmic Distance Ladder). A linear flow that expands in scale (Earth -> Solar System -> Universe) mirrors the historical narrative of the book perfectly, allowing the user to "climb" the ladder of understanding.\
+    -->\
+\
+    <!-- Visualization & Content Choices:\
+         1. Era 1 - Eratosthenes: \
+            - Goal: Inform/Organize. Show how simple geometry measured the Earth.\
+            - Method: CSS/HTML Interactive Diagram (Shadow angle slider). \
+            - Justification: Explains the concept better than text. NO SVG used.\
+         2. Era 2 - Scale of the Solar System:\
+            - Goal: Compare. Show the jump in scale from Earth to Sun to Stars.\
+            - Method: Chart.js Bar Chart (Logarithmic scale potentially, or relative sizes).\
+            - Justification: Visualizes the "proportions" problem mentioned in the text.\
+         3. Era 3 - Hubble's Law:\
+            - Goal: Relationships. Show correlation between Distance and Velocity.\
+            - Method: Chart.js Scatter Plot.\
+            - Justification: This is the core evidence for the expanding universe. Interaction allows users to click points (galaxies).\
+         4. Era 3 - Universe Composition:\
+            - Goal: Inform/Shock. Show how much is "Dark".\
+            - Method: Chart.js Doughnut Chart.\
+            - Justification: Highlights the "Enigma" conclusion of the book.\
+         \
+         CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.\
+    -->\
+\
+    <style>\
+        body \{\
+            font-family: 'Inter', sans-serif;\
+            background-color: #f5f5f0; /* Stone 100/Warm neutral */\
+            color: #292524; /* Stone 800 */\
+        \}\
+        h1, h2, h3, h4, .serif \{\
+            font-family: 'Lora', serif;\
+        \}\
+        \
+        /* Chart Container Styling - Mandatory Requirements */\
+        .chart-container \{\
+            position: relative;\
+            width: 100%;\
+            max-width: 650px; /* Max width constraint */\
+            margin-left: auto;\
+            margin-right: auto;\
+            height: 350px; /* Base height */\
+            max-height: 400px;\
+        \}\
+        \
+        @media (min-width: 768px) \{\
+            .chart-container \{\
+                height: 400px;\
+            \}\
+        \}\
+\
+        /* Custom Scrollbar for aesthetics */\
+        ::-webkit-scrollbar \{\
+            width: 8px;\
+        \}\
+        ::-webkit-scrollbar-track \{\
+            background: #e7e5e4;\
+        \}\
+        ::-webkit-scrollbar-thumb \{\
+            background: #a8a29e;\
+            border-radius: 4px;\
+        \}\
+        ::-webkit-scrollbar-thumb:hover \{\
+            background: #78716c;\
+        \}\
+\
+        .highlight-card \{\
+            transition: all 0.3s ease;\
+        \}\
+        .highlight-card:hover \{\
+            transform: translateY(-5px);\
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);\
+        \}\
+    </style>\
+</head>\
+<body class="antialiased selection:bg-stone-300 selection:text-stone-900">\
+\
+    <!-- Header / Hero Section -->\
+    <header class="bg-[#e7e5e4] border-b border-stone-300 pt-16 pb-12 px-4 text-center">\
+        <div class="max-w-4xl mx-auto">\
+            <span class="text-stone-500 uppercase tracking-widest text-sm font-semibold mb-2 block">Basado en el libro de Kitty Ferguson</span>\
+            <h1 class="text-4xl md:text-6xl font-bold text-stone-800 mb-6 leading-tight">La Medida del Universo</h1>\
+            <p class="text-xl md:text-2xl text-stone-600 serif max-w-2xl mx-auto leading-relaxed">\
+                Una cr\'f3nica del esfuerzo humano por cuantificar el infinito: desde la sombra de un palo hasta la expansi\'f3n del cosmos.\
+            </p>\
+        </div>\
+    </header>\
+\
+    <!-- Navigation -->\
+    <nav id="navbar" class="sticky top-0 z-50 bg-[#f5f5f0]/95 backdrop-blur shadow-sm border-b border-stone-200 transition-all duration-300">\
+        <div class="max-w-6xl mx-auto px-4">\
+            <div class="flex justify-center md:justify-between items-center h-16">\
+                <div class="hidden md:block font-bold text-stone-700 text-lg serif">Escalera C\'f3smica</div>\
+                <div class="flex space-x-1 md:space-x-8 overflow-x-auto w-full md:w-auto no-scrollbar">\
+                    <button onclick="scrollToSection('era1')" class="nav-btn px-3 py-2 text-sm md:text-base font-medium text-stone-600 hover:text-stone-900 border-b-2 border-transparent hover:border-stone-400 transition-colors whitespace-nowrap">I. Los Cimientos</button>\
+                    <button onclick="scrollToSection('era2')" class="nav-btn px-3 py-2 text-sm md:text-base font-medium text-stone-600 hover:text-stone-900 border-b-2 border-transparent hover:border-stone-400 transition-colors whitespace-nowrap">II. Sistema Solar</button>\
+                    <button onclick="scrollToSection('era3')" class="nav-btn px-3 py-2 text-sm md:text-base font-medium text-stone-600 hover:text-stone-900 border-b-2 border-transparent hover:border-stone-400 transition-colors whitespace-nowrap">III. El Cosmos</button>\
+                    <button onclick="scrollToSection('learnings')" class="nav-btn px-3 py-2 text-sm md:text-base font-medium text-stone-600 hover:text-stone-900 border-b-2 border-transparent hover:border-stone-400 transition-colors whitespace-nowrap">Aprendizajes</button>\
+                </div>\
+            </div>\
+        </div>\
+    </nav>\
+\
+    <main class="max-w-6xl mx-auto px-4 py-8 space-y-20">\
+\
+        <!-- Introduction Context -->\
+        <section class="prose prose-stone max-w-3xl mx-auto text-center mt-8">\
+            <p class="text-lg text-stone-700">\
+                Este interactivo explora c\'f3mo la humanidad ha respondido a preguntas fundamentales: \
+                <strong>\'bfA qu\'e9 distancia? \'bfA qu\'e9 velocidad? \'bfQu\'e9 edad?</strong> \
+                No es solo una historia de matem\'e1ticas, sino de pol\'edtica, religi\'f3n y ambici\'f3n humana.\
+                Utiliza los controles a continuaci\'f3n para explorar los hitos definidos por Kitty Ferguson.\
+            </p>\
+        </section>\
+\
+        <!-- ERA 1: ANTIQUITY -->\
+        <section id="era1" class="scroll-mt-24 border-t border-stone-200 pt-12">\
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12">\
+                <!-- Text Content -->\
+                <div class="md:col-span-5 space-y-6">\
+                    <span class="text-orange-700 font-bold tracking-wider text-xs uppercase">Antig\'fcedad - 1600 D.C.</span>\
+                    <h2 class="text-3xl font-bold text-stone-800 serif">Los Cimientos: El C\'edrculo y la Esfera</h2>\
+                    \
+                    <p class="text-stone-600 leading-relaxed">\
+                        En esta etapa, el ingenio super\'f3 a la tecnolog\'eda. Antes de los telescopios, mentes como <strong>Erat\'f3stenes</strong> utilizaron geometr\'eda pura para medir lo "inmensurable".\
+                    </p>\
+                    \
+                    <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-orange-400">\
+                        <h3 class="font-bold text-stone-800 mb-2">Puntos Clave</h3>\
+                        <ul class="list-disc pl-5 space-y-2 text-sm text-stone-600">\
+                            <li><strong>Erat\'f3stenes (S. III a.C.):</strong> Midi\'f3 la circunferencia de la Tierra usando sombras.</li>\
+                            <li><strong>Aristarco:</strong> Propuso el modelo helioc\'e9ntrico (ignorado por siglos).</li>\
+                            <li><strong>Ptolomeo:</strong> Estableci\'f3 el modelo geoc\'e9ntrico, complejo pero funcional, que domin\'f3 por motivos filos\'f3ficos y religiosos.</li>\
+                        </ul>\
+                    </div>\
+                </div>\
+\
+                <!-- Interactive Element: Eratosthenes -->\
+                <div class="md:col-span-7 bg-stone-100 rounded-xl p-6 md:p-8 flex flex-col items-center justify-center relative overflow-hidden">\
+                    <h3 class="text-xl font-bold text-stone-700 mb-4 serif text-center">La Geometr\'eda de las Sombras</h3>\
+                    <p class="text-sm text-stone-500 mb-6 text-center max-w-md">\
+                        Erat\'f3stenes not\'f3 que en Siena, al mediod\'eda, el sol no proyectaba sombra (estaba en el cenit), pero en Alejandr\'eda s\'ed. Usando la diferencia de \'e1ngulos, calcul\'f3 el tama\'f1o de la Tierra.\
+                    </p>\
+\
+                    <!-- CSS Geometry visualization -->\
+                    <div class="relative w-64 h-64 border-b-4 border-stone-400 mb-8 bg-sky-100 rounded-t-full overflow-hidden shadow-inner">\
+                        <!-- Sun Rays -->\
+                        <div class="absolute inset-0 pointer-events-none opacity-20 bg-yellow-200" id="sun-overlay"></div>\
+                        \
+                        <!-- The Stick (Obelisk in Alexandria) -->\
+                        <div class="absolute bottom-0 left-1/2 w-2 h-24 bg-stone-800 origin-bottom transform -translate-x-1/2 z-10"></div>\
+                        \
+                        <!-- The Shadow -->\
+                        <div id="shadow" class="absolute bottom-0 left-1/2 h-1 bg-black/30 origin-left transform -translate-x-1/2 z-0" style="width: 0px; transform: rotate(0deg);"></div>\
+                        \
+                        <div class="absolute top-4 right-4 text-xs font-mono text-stone-500">Alejandr\'eda</div>\
+                    </div>\
+\
+                    <div class="w-full max-w-md bg-white p-4 rounded-lg shadow-sm">\
+                        <label class="block text-sm font-medium text-stone-700 mb-2">\
+                            \'c1ngulo del Sol (Simulaci\'f3n): <span id="angle-val" class="font-bold text-orange-600">7.2\'b0</span>\
+                        </label>\
+                        <input type="range" id="sun-angle" min="0" max="45" value="7.2" step="0.1" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-orange-500">\
+                        <p class="text-xs text-stone-500 mt-2 italic">\
+                            Desliza para ver c\'f3mo el \'e1ngulo de la sombra revela la curvatura si conocemos la distancia entre ciudades.\
+                        </p>\
+                    </div>\
+                </div>\
+            </div>\
+        </section>\
+\
+        <!-- ERA 2: SOLAR SYSTEM -->\
+        <section id="era2" class="scroll-mt-24 border-t border-stone-200 pt-12">\
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12">\
+                <!-- Content -->\
+                <div class="md:col-span-5 space-y-6 order-1 md:order-2">\
+                    <span class="text-blue-700 font-bold tracking-wider text-xs uppercase">1600 - 1900</span>\
+                    <h2 class="text-3xl font-bold text-stone-800 serif">El Sistema Solar bajo la Lupa</h2>\
+                    \
+                    <p class="text-stone-600 leading-relaxed">\
+                        Con el telescopio y las leyes de Newton, entendimos el <em>c\'f3mo</em> se mueven los planetas, pero no <em>cu\'e1n lejos</em> estaban. Era un problema de proporciones sin escala.\
+                    </p>\
+                    \
+                    <div class="space-y-4">\
+                        <div class="p-4 bg-white border border-stone-200 rounded-lg">\
+                            <h4 class="font-bold text-stone-800 text-sm">El Problema de la Proporci\'f3n</h4>\
+                            <p class="text-sm text-stone-600">Sab\'edamos que J\'fapiter estaba 5 veces m\'e1s lejos del Sol que la Tierra, pero \'bfcu\'e1nto es "1" distancia Tierra-Sol (AU)?</p>\
+                        </div>\
+                        <div class="p-4 bg-white border border-stone-200 rounded-lg">\
+                            <h4 class="font-bold text-stone-800 text-sm">El Triunfo del Paralaje</h4>\
+                            <p class="text-sm text-stone-600">Cassini y Halley usaron tr\'e1nsitos planetarios para fijar la AU. Siglos despu\'e9s, Bessel midi\'f3 la primera estrella, revelando distancias aterradoras.</p>\
+                        </div>\
+                    </div>\
+                </div>\
+\
+                <!-- Visualization: Scale Chart -->\
+                <div class="md:col-span-7 order-2 md:order-1">\
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200">\
+                        <div class="mb-4">\
+                            <h3 class="text-lg font-bold text-stone-800 serif">La Escalera de Distancias (Logar\'edtmica)</h3>\
+                            <p class="text-sm text-stone-500">\
+                                Comparaci\'f3n de magnitudes. Nota c\'f3mo cada salto multiplica la distancia exponencialmente.\
+                            </p>\
+                        </div>\
+                        \
+                        <!-- Chart Container -->\
+                        <div class="chart-container">\
+                            <canvas id="scaleChart"></canvas>\
+                        </div>\
+                        <div class="mt-4 text-xs text-center text-stone-400">\
+                            *Escala Logar\'edtmica (Base 10) para poder visualizar magnitudes tan dispares en un solo gr\'e1fico.\
+                        </div>\
+                    </div>\
+                </div>\
+            </div>\
+        </section>\
+\
+        <!-- ERA 3: THE COSMOS -->\
+        <section id="era3" class="scroll-mt-24 border-t border-stone-200 pt-12">\
+            <div class="text-center max-w-3xl mx-auto mb-12">\
+                <span class="text-purple-700 font-bold tracking-wider text-xs uppercase">1900 - Actualidad</span>\
+                <h2 class="text-3xl md:text-4xl font-bold text-stone-800 serif mb-4">Dimensionando la Galaxia y el Cosmos</h2>\
+                <p class="text-stone-600">\
+                    La era de las "Candelas Est\'e1ndar". Henrietta Leavitt nos dio la regla para medir galaxias, y Edwin Hubble la us\'f3 para descubrir que el universo se expande.\
+                </p>\
+            </div>\
+\
+            <!-- Hubble Law Interactive -->\
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">\
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200">\
+                    <div class="flex justify-between items-start mb-4">\
+                        <div>\
+                            <h3 class="text-lg font-bold text-stone-800 serif">Ley de Hubble: Expansi\'f3n</h3>\
+                            <p class="text-sm text-stone-500 leading-tight">\
+                                Relaci\'f3n entre Distancia (Mpc) y Velocidad de recesi\'f3n (km/s).<br>\
+                                <span class="italic text-xs">M\'e1s lejos = M\'e1s r\'e1pido.</span>\
+                            </p>\
+                        </div>\
+                        <button id="toggleHubbleData" class="text-xs bg-stone-100 hover:bg-stone-200 px-3 py-1 rounded border border-stone-300 transition">\
+                            Simular Nuevos Datos\
+                        </button>\
+                    </div>\
+                    \
+                    <!-- Chart Container -->\
+                    <div class="chart-container">\
+                        <canvas id="hubbleChart"></canvas>\
+                    </div>\
+                </div>\
+\
+                <div class="flex flex-col justify-center space-y-6">\
+                    <div class="bg-purple-50 p-6 rounded-lg border-l-4 border-purple-500">\
+                        <h4 class="font-bold text-purple-900 mb-2">Candelas Est\'e1ndar (Henrietta Leavitt)</h4>\
+                        <p class="text-sm text-stone-700">\
+                            Sin el descubrimiento de Leavitt sobre las estrellas <strong>Cefeidas</strong>, Hubble no habr\'eda podido medir la distancia a Andr\'f3meda. Fue un "escal\'f3n" vital en la escalera c\'f3smica, a menudo pasado por alto por la historia dominada por hombres.\
+                        </p>\
+                    </div>\
+                    <div class="bg-stone-50 p-6 rounded-lg border-l-4 border-stone-500">\
+                        <h4 class="font-bold text-stone-900 mb-2">La Destrucci\'f3n de la Estabilidad</h4>\
+                        <p class="text-sm text-stone-700">\
+                            Antes del siglo XX, se cre\'eda que el universo era est\'e1tico y eterno. Los datos de Hubble probaron un origen (Big Bang) y una evoluci\'f3n continua.\
+                        </p>\
+                    </div>\
+                </div>\
+            </div>\
+\
+            <!-- Universe Composition -->\
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">\
+                <div class="md:col-span-6">\
+                     <h3 class="text-2xl font-bold text-stone-800 serif mb-4">El Enigma Final: \'bfQu\'e9 estamos midiendo?</h3>\
+                     <p class="text-stone-600 mb-4">\
+                         Al final del milenio, descubrimos que todo lo que podemos ver y medir (estrellas, planetas, gas) es solo una fracci\'f3n min\'fascula de la realidad.\
+                     </p>\
+                     <p class="text-stone-600 mb-4">\
+                         La <strong>Energ\'eda Oscura</strong> acelera la expansi\'f3n, y la <strong>Materia Oscura</strong> mantiene las galaxias unidas. Son los componentes mayoritarios e invisibles.\
+                     </p>\
+                     <div class="mt-6 p-4 bg-stone-800 text-stone-100 rounded-lg shadow-lg">\
+                        <p class="italic text-lg serif text-center">"La paradoja de medir lo inmensurable."</p>\
+                     </div>\
+                </div>\
+                <div class="md:col-span-6 flex justify-center">\
+                    <!-- Chart Container -->\
+                    <div class="chart-container" style="max-width: 400px; height: 300px;">\
+                        <canvas id="compositionChart"></canvas>\
+                    </div>\
+                </div>\
+            </div>\
+        </section>\
+\
+        <!-- LEARNINGS / TAKEAWAYS -->\
+        <section id="learnings" class="scroll-mt-24 border-t border-stone-200 pt-12 pb-20">\
+            <h2 class="text-3xl font-bold text-stone-800 serif text-center mb-10">Aprendizajes Clave</h2>\
+            \
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">\
+                <!-- Card 1 -->\
+                <div class="highlight-card bg-white p-6 rounded-xl border border-stone-200">\
+                    <div class="text-3xl mb-4">\uc0\u55358 \u56800 </div>\
+                    <h3 class="font-bold text-stone-800 mb-2">Ingenier\'eda Humana</h3>\
+                    <p class="text-sm text-stone-600">\
+                        Los grandes saltos no siempre vinieron de mejor tecnolog\'eda, sino de mejor geometr\'eda y pensamiento abstracto (como Erat\'f3stenes).\
+                    </p>\
+                </div>\
+\
+                <!-- Card 2 -->\
+                <div class="highlight-card bg-white p-6 rounded-xl border border-stone-200">\
+                    <div class="text-3xl mb-4">\uc0\u55358 \u56988 </div>\
+                    <h3 class="font-bold text-stone-800 mb-2">La Escalera de Distancias</h3>\
+                    <p class="text-sm text-stone-600">\
+                        No hay una sola regla. Medimos el Sol para medir estrellas cercanas; medimos esas para calibrar Cefeidas; usamos Cefeidas para medir galaxias. Todo est\'e1 conectado.\
+                    </p>\
+                </div>\
+\
+                <!-- Card 3 -->\
+                <div class="highlight-card bg-white p-6 rounded-xl border border-stone-200">\
+                    <div class="text-3xl mb-4">\uc0\u55357 \u56421 </div>\
+                    <h3 class="font-bold text-stone-800 mb-2">Contexto Humano</h3>\
+                    <p class="text-sm text-stone-600">\
+                        La pol\'edtica y la fe moldearon la ciencia. Figuras como Henrietta Leavitt fueron cruciales pero marginadas por su g\'e9nero y estatus econ\'f3mico.\
+                    </p>\
+                </div>\
+            </div>\
+        </section>\
+\
+    </main>\
+\
+    <footer class="bg-stone-800 text-stone-400 py-12 text-center">\
+        <p class="font-serif italic text-lg mb-2">"Somos polvo de estrellas tratando de comprenderse a s\'ed mismo."</p>\
+        <p class="text-xs mt-4 uppercase tracking-widest">Generado a partir del resumen de "La Medida del Universo" de Kitty Ferguson</p>\
+    </footer>\
+\
+    <!-- JavaScript Logic -->\
+    <script>\
+        // --- State Management ---\
+        const appState = \{\
+            sunAngle: 7.2,\
+            hubbleDataPoints: 50\
+        \};\
+\
+        // --- Navigation Logic ---\
+        function scrollToSection(id) \{\
+            const element = document.getElementById(id);\
+            if (element) \{\
+                element.scrollIntoView(\{ behavior: 'smooth' \});\
+                // Update active state visuals could go here\
+            \}\
+        \}\
+\
+        // --- Eratosthenes Interaction (Vanilla JS + CSS Transform) ---\
+        const angleInput = document.getElementById('sun-angle');\
+        const angleDisplay = document.getElementById('angle-val');\
+        const shadowEl = document.getElementById('shadow');\
+\
+        if(angleInput && shadowEl) \{\
+            angleInput.addEventListener('input', (e) => \{\
+                const angle = parseFloat(e.target.value);\
+                appState.sunAngle = angle;\
+                angleDisplay.textContent = angle.toFixed(1) + '\'b0';\
+                \
+                // Calculate shadow length relative to stick height (simple tan approximation visual)\
+                // If stick is 96px (h-24), shadow length = 96 * tan(angle)\
+                const radians = angle * (Math.PI / 180);\
+                const stickHeight = 96; \
+                let shadowLength = stickHeight * Math.tan(radians);\
+                \
+                // Limit shadow length for visual purposes\
+                if (shadowLength > 150) shadowLength = 150;\
+                \
+                shadowEl.style.width = `$\{shadowLength\}px`;\
+            \});\
+        \}\
+\
+        // --- Chart.js Implementations ---\
+\
+        // 1. Scale Chart (Logarithmic)\
+        const scaleCtx = document.getElementById('scaleChart').getContext('2d');\
+        new Chart(scaleCtx, \{\
+            type: 'bar',\
+            data: \{\
+                labels: ['Tierra (Radio)', 'Distancia a Luna', 'Distancia a Sol (AU)', 'Sistema Solar (Radio)', 'Estrella Cercana', 'V\'eda L\'e1ctea (Radio)'],\
+                datasets: [\{\
+                    label: 'Distancia en Kil\'f3metros (Log)',\
+                    data: [6371, 384400, 149600000, 4500000000, 40000000000000, 500000000000000000],\
+                    backgroundColor: '#ea580c', // Orange-600\
+                    borderRadius: 4\
+                \}]\
+            \},\
+            options: \{\
+                responsive: true,\
+                maintainAspectRatio: false,\
+                indexAxis: 'y',\
+                scales: \{\
+                    x: \{\
+                        type: 'logarithmic',\
+                        title: \{ display: true, text: 'Kil\'f3metros (Escala Logar\'edtmica)' \},\
+                        grid: \{ color: '#e7e5e4' \}\
+                    \},\
+                    y: \{\
+                        grid: \{ display: false \}\
+                    \}\
+                \},\
+                plugins: \{\
+                    legend: \{ display: false \},\
+                    tooltip: \{\
+                        callbacks: \{\
+                            label: function(context) \{\
+                                return Number(context.raw).toExponential(2) + ' km';\
+                            \}\
+                        \}\
+                    \}\
+                \}\
+            \}\
+        \});\
+\
+        // 2. Hubble Chart (Scatter)\
+        // Generate mock Hubble data\
+        function generateHubbleData(count) \{\
+            const data = [];\
+            for(let i=0; i<count; i++) \{\
+                // Distance in Mpc (random between 1 and 500)\
+                const dist = Math.random() * 500 + 10;\
+                // Velocity = H0 * d + noise. H0 approx 70 km/s/Mpc\
+                const velocity = (70 * dist) + (Math.random() * 1000 - 500); \
+                data.push(\{x: dist, y: velocity\});\
+            \}\
+            return data;\
+        \}\
+\
+        const hubbleCtx = document.getElementById('hubbleChart').getContext('2d');\
+        const hubbleChart = new Chart(hubbleCtx, \{\
+            type: 'scatter',\
+            data: \{\
+                datasets: [\{\
+                    label: 'Galaxias',\
+                    data: generateHubbleData(50),\
+                    backgroundColor: 'rgba(59, 130, 246, 0.6)', // Blue-500 transparent\
+                    borderColor: '#2563eb',\
+                    borderWidth: 1,\
+                    pointRadius: 4,\
+                    pointHoverRadius: 6\
+                \},\
+                \{\
+                    label: 'Tendencia (Expansi\'f3n)',\
+                    type: 'line',\
+                    data: [\{x:0, y:0\}, \{x:500, y: 35000\}],\
+                    borderColor: '#9333ea', // Purple-600\
+                    borderWidth: 2,\
+                    borderDash: [5, 5],\
+                    pointRadius: 0,\
+                    fill: false\
+                \}]\
+            \},\
+            options: \{\
+                responsive: true,\
+                maintainAspectRatio: false,\
+                scales: \{\
+                    x: \{\
+                        title: \{ display: true, text: 'Distancia (Megaparsecs)' \},\
+                        grid: \{ color: '#e7e5e4' \}\
+                    \},\
+                    y: \{\
+                        title: \{ display: true, text: 'Velocidad de Recesi\'f3n (km/s)' \},\
+                        grid: \{ color: '#e7e5e4' \}\
+                    \}\
+                \},\
+                plugins: \{\
+                    tooltip: \{\
+                        callbacks: \{\
+                            label: (ctx) => `$\{ctx.raw.x.toFixed(0)\} Mpc : $\{ctx.raw.y.toFixed(0)\} km/s`\
+                        \}\
+                    \}\
+                \}\
+            \}\
+        \});\
+\
+        // Toggle Data Interaction\
+        document.getElementById('toggleHubbleData').addEventListener('click', () => \{\
+            hubbleChart.data.datasets[0].data = generateHubbleData(50);\
+            hubbleChart.update();\
+        \});\
+\
+        // 3. Composition Chart (Doughnut)\
+        const compCtx = document.getElementById('compositionChart').getContext('2d');\
+        new Chart(compCtx, \{\
+            type: 'doughnut',\
+            data: \{\
+                labels: ['Energ\'eda Oscura', 'Materia Oscura', 'Materia Normal (\'c1tomos)'],\
+                datasets: [\{\
+                    data: [68, 27, 5],\
+                    backgroundColor: [\
+                        '#1c1917', // Dark/Black\
+                        '#57534e', // Grey\
+                        '#ea580c'  // Orange (Life/Stars)\
+                    ],\
+                    borderWidth: 0,\
+                    hoverOffset: 4\
+                \}]\
+            \},\
+            options: \{\
+                responsive: true,\
+                maintainAspectRatio: false,\
+                plugins: \{\
+                    legend: \{ position: 'bottom' \},\
+                    title: \{\
+                        display: true,\
+                        text: 'Composici\'f3n del Universo',\
+                        font: \{ size: 16, family: "'Lora', serif" \}\
+                    \}\
+                \}\
+            \}\
+        \});\
+\
+    </script>\
+</body>\
+</html>}
